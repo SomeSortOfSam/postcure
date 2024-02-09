@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://5fu8tc8fd60d"]
+
+[ext_resource type="Script" path="res://scripts/board.gd" id="1_cn16e"]
+[ext_resource type="PackedScene" uid="uid://bht67ndaxujdj" path="res://scenes/test_unit.tscn" id="2_aa7cq"]
+
+[sub_resource type="TileSet" id="TileSet_oag8x"]
+tile_shape = 3
+
+[node name="TileMap" type="TileMap"]
+tile_set = SubResource("TileSet_oag8x")
+format = 2
+script = ExtResource("1_cn16e")
+unit_prefab = ExtResource("2_aa7cq")
+poly_actions = null
