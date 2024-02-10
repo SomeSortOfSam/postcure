@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://d1js6teyk77ha"]
+
+[ext_resource type="Script" path="res://scripts/game.gd" id="1_q1lm8"]
+[ext_resource type="PackedScene" uid="uid://5fu8tc8fd60d" path="res://scenes/test_board.tscn" id="2_osn6x"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_q1lm8")
+
+[node name="TileMap" parent="." instance=ExtResource("2_osn6x")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -92.0
+offset_top = -39.0
+offset_right = -6.0
+offset_bottom = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Take Turn"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(34, -11)
