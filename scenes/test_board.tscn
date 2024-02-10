@@ -1,14 +1,46 @@
-[gd_scene load_steps=4 format=3 uid="uid://5fu8tc8fd60d"]
+[gd_scene load_steps=8 format=3 uid="uid://5fu8tc8fd60d"]
 
 [ext_resource type="Script" path="res://scripts/board.gd" id="1_cn16e"]
+[ext_resource type="Texture2D" uid="uid://ci2gbwrwmknuc" path="res://sprites/programer_character.svg" id="1_wskna"]
 [ext_resource type="PackedScene" uid="uid://bht67ndaxujdj" path="res://scenes/test_unit.tscn" id="2_aa7cq"]
+[ext_resource type="Texture2D" uid="uid://c6f1gq0jvmxvd" path="res://sprites/programer_tiles.svg" id="2_vhbtg"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7yic2"]
+texture = ExtResource("1_wskna")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_dnw02"]
+texture = ExtResource("2_vhbtg")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_oag8x"]
 tile_shape = 3
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_7yic2")
+sources/1 = SubResource("TileSetAtlasSource_dnw02")
 
 [node name="TileMap" type="TileMap"]
 tile_set = SubResource("TileSet_oag8x")
 format = 2
+layer_0/name = "Floor"
+layer_0/tile_data = PackedInt32Array(-65535, 1, 0, -65536, 1, 0, -1, 1, 0, 0, 1, 0, 1, 1, 0, 2, 1, 0, -65534, 1, 0, -131070, 1, 0, -131071, 1, 0, -131072, 1, 0, -65537, 1, 0, -2, 1, 0, 65535, 1, 0, 3, 1, 0, 65534, 1, 0, -3, 65537, 0, 65533, 65537, 0, 196606, 65537, 0, 196607, 65537, 0, 131072, 65537, 0, 131073, 65537, 0, 131074, 65537, 0, 131075, 65537, 0, 65539, 65537, 0, 4, 65537, 0, -196608, 131073, 0, -262144, 131073, 0, -327680, 131073, 0, -262143, 131073, 0, -393216, 1, 0, -393217, 1, 0, -524288, 1, 0, -524287, 1, 0, -458751, 1, 0, -393215, 1, 0, -458752, 65537, 0, -65533, 65537, 0, 131070, 1, 0, 131071, 1, 0, 65536, 1, 0, 65537, 1, 0, 65538, 1, 0, 131069, 65537, 0)
+layer_1/name = "Units"
+layer_1/navigation_enabled = false
+layer_1/tile_data = PackedInt32Array(-65536, 65536, 0, -65535, 131072, 0, -1, 0, 0)
 script = ExtResource("1_cn16e")
 unit_prefab = ExtResource("2_aa7cq")
-poly_actions = null
