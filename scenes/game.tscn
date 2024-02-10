@@ -35,3 +35,5 @@ text = "Take Turn"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(34, -11)
+
+[connection signal="pressed" from="CanvasLayer/Control/Button" to="TileMap" method="process_turn" binds= [true]]
