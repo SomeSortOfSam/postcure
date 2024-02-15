@@ -1,9 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://5fu8tc8fd60d"]
+[gd_scene load_steps=12 format=3 uid="uid://5fu8tc8fd60d"]
 
 [ext_resource type="Script" path="res://scripts/board.gd" id="1_cn16e"]
 [ext_resource type="Texture2D" uid="uid://ci2gbwrwmknuc" path="res://sprites/programer_character.svg" id="1_wskna"]
-[ext_resource type="PackedScene" uid="uid://bht67ndaxujdj" path="res://scenes/test_unit.tscn" id="2_aa7cq"]
+[ext_resource type="PackedScene" uid="uid://bht67ndaxujdj" path="res://scenes/unit.tscn" id="2_aa7cq"]
 [ext_resource type="Texture2D" uid="uid://c6f1gq0jvmxvd" path="res://sprites/programer_tiles.svg" id="2_vhbtg"]
+[ext_resource type="Script" path="res://scripts/poly_action.gd" id="5_gxehn"]
+[ext_resource type="Resource" uid="uid://c1aa7s6tmu4op" path="res://character_profiles/test_player.tres" id="6_xrehn"]
+[ext_resource type="Resource" uid="uid://bpibs6bn2ay5g" path="res://character_profiles/test_enemy.tres" id="7_a44dc"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7yic2"]
 texture = ExtResource("1_wskna")
@@ -25,6 +28,11 @@ tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_7yic2")
 sources/1 = SubResource("TileSetAtlasSource_dnw02")
 
+[sub_resource type="Resource" id="Resource_jyljm"]
+script = ExtResource("5_gxehn")
+root = ExtResource("6_xrehn")
+partners = Array[Resource("res://scripts/character_profile.gd")]([ExtResource("6_xrehn")])
+
 [node name="TileMap" type="TileMap"]
 tile_set = SubResource("TileSet_oag8x")
 format = 2
@@ -36,5 +44,10 @@ layer_1/tile_data = PackedInt32Array(-65536, 65536, 0, -65535, 131072, 0, -1, 0,
 layer_2/name = "ghosts"
 layer_2/modulate = Color(1, 0.603922, 0, 0.501961)
 layer_2/tile_data = PackedInt32Array()
+layer_3/name = "damage_cells"
+layer_3/modulate = Color(1, 0.0588235, 0.133333, 0.501961)
+layer_3/tile_data = PackedInt32Array()
 script = ExtResource("1_cn16e")
 unit_prefab = ExtResource("2_aa7cq")
+poly_actions = Array[ExtResource("5_gxehn")]([SubResource("Resource_jyljm")])
+character_profiles = Array[Object]([ExtResource("6_xrehn"), ExtResource("7_a44dc")])

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CharacterProfile" load_steps=5 format=3 uid="uid://bpibs6bn2ay5g"]
+
+[ext_resource type="Script" path="res://scripts/character_profile.gd" id="1_4vpr2"]
+[ext_resource type="Texture2D" uid="uid://ci2gbwrwmknuc" path="res://sprites/programer_character.svg" id="2_ds6q8"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qjyvy"]
+atlas = ExtResource("2_ds6q8")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8q3y6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qjyvy")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}]
+
+[resource]
+script = ExtResource("1_4vpr2")
+sprite_frames = SubResource("SpriteFrames_8q3y6")
