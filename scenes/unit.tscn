@@ -31,4 +31,7 @@ emitting = false
 amount = 1
 process_material = SubResource("ParticleProcessMaterial_any7m")
 texture = SubResource("AtlasTexture_2hauu")
+lifetime = 0.4
 one_shot = true
+
+[connection signal="dead" from="." to="." method="queue_free"]

@@ -15,6 +15,7 @@ signal requesting_spesific_player_response(id : int, response : Callable)
 signal requesting_located_player_response(target : Vector2, response : Callable)
 signal requesting_enemey_response(response : Callable)
 signal requesting_spesific_enemey_response(id : int, response : Callable)
+signal requesting_located_enemey_response(target : Vector2, response : Callable)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -72,8 +73,7 @@ func populate_units():
 		unit.apply_profile(character_profiles[UNIT_ATLAS_COORD.find(unit_atlas_coord)])
 		unit.position = map_to_local(cell)
 		unit.starting_cell = cell
-		if PLAYER_ATLAS_COORD.has(unit_atlas_coord):
-			requesting_located_player_response.connect(unit.respond_to_location)
+		(requesting_located_player_response if PLAYER_ATLAS_COORD.has(unit_atlas_coord) else requesting_located_enemey_response).connect(unit.respond_to_location)
 		(requesting_player_response if PLAYER_ATLAS_COORD.has(unit_atlas_coord) else requesting_enemey_response).connect(unit.respond_to_board)
 		(requesting_spesific_player_response if PLAYER_ATLAS_COORD.has(unit_atlas_coord) else requesting_spesific_enemey_response).connect(unit.respond_to_board_spesifically)
 	set_layer_modulate(1,Color(Color.WHITE,0))
@@ -82,7 +82,11 @@ func process_turn(player_turn : bool):
 	process_movement(player_turn)
 	var action_set : Dictionary = get_actions(player_turn)
 	for action : PolyAction in action_set.keys():
-		action.activate(action_set[action])
+		var effects := action.get_cell_effects(action_set[action],self)
+		for effect in effects:
+			(requesting_located_enemey_response if player_turn else requesting_located_player_response).emit(map_to_local(effect.cell), func(unit : Unit):
+				unit.health -= effect.damage
+			)
 	if player_turn:
 		process_turn(false)
 

@@ -5,9 +5,17 @@ extends Node2D
 @onready var sprites : AnimatedSprite2D = $AnimatedSprite2D
 
 var id : CharacterProfile
-var health : int = 5
+var health : int = 5:
+	set(new_health):
+		if new_health <= 0:
+			dead.emit()
+		if hurt_particles and health < new_health:
+			hurt_particles.emitting = true
+		health = new_health
 var starting_cell : Vector2i
 var walking_distance : int = 3
+
+signal dead
 
 func apply_profile(profile : CharacterProfile):
 	id = profile
