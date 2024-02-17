@@ -40,21 +40,27 @@ static func close_current_tree(tree : SceneTree):
 
 static func switch_tree(tree : SceneTree, data : Dictionary):
 	if data["current_level_index"] < 0:
-		var err = tree.change_scene_to_file(data["hub_level_path"])
-		if not err == OK:
-			print("Scene failed to load with error ", error_string(err))
-		
-		await tree.tree_changed
+		switch_tree_to_hub_level(tree, data)
 	else:
-		var err = tree.change_scene_to_packed(board_prefab)
-		if not err == OK:
-			print("Scene failed to load with error ", error_string(err))
-		
-		var board_prefab : PackedScene = load(data["level_path_array"][data["current_level_index"]])
-		
-		await tree.tree_changed
-		
-		tree.current_scene.add_child(board_prefab.instantiate())
+		switch_tree_to_board(tree, data)
+
+static func switch_tree_to_hub_level(tree : SceneTree, data : Dictionary):
+	var err = tree.change_scene_to_file(data["hub_level_path"])
+	if not err == OK:
+		print("Scene failed to load with error ", error_string(err))
+	
+	await tree.tree_changed
+
+static func switch_tree_to_board(tree : SceneTree, data : Dictionary):
+	var err = tree.change_scene_to_packed(board_prefab)
+	if not err == OK:
+		print("Scene failed to load with error ", error_string(err))
+	
+	var board_prefab : PackedScene = load(data["level_path_array"][data["current_level_index"]])
+	
+	await tree.tree_changed
+	
+	tree.current_scene.add_board(board_prefab.instantiate())
 
 static func open_new_tree(tree : SceneTree, data : Dictionary):
 	apply_saved_level_data(tree,data)
