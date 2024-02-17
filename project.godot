@@ -26,7 +26,12 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/github_to_itch/plugin.cfg")
+
+[github_to_itch]
+
+config/itch_username="SomeSortOfSam"
+config/itch_project_name=""
 
 [rendering]
 
