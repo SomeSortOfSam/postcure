@@ -22,8 +22,14 @@ func _ready():
 	populate_units()
 
 func _input(event):
+	if event is InputEventMouseMotion:
+		on_mouse_moved(event)
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		on_left_mouse_pressed(event)
+
+func on_mouse_moved(event : InputEventMouseMotion):
+	clear_layer(4)
+	set_cell(4,local_to_map(event.global_position) - Vector2i(17,14),1,Vector2i(2,0))
 
 func on_left_mouse_pressed(event : InputEventMouseButton):
 	var target_cell := local_to_map(event.global_position) - Vector2i(17,14) # Magic vector? Where did this come from?

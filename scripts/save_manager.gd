@@ -7,7 +7,6 @@ const default_data : Dictionary = { "hub_level_path" : "res://scenes/test_hub.ts
 									"achivement_flags" : 0 # This is entirely overkill
 									}
 
-const hub_prefab : PackedScene = preload("res://scenes/test_hub.tscn")
 const board_prefab : PackedScene = preload("res://scenes/game.tscn")
 
 static var save_location = 0
@@ -56,11 +55,11 @@ static func switch_tree_to_board(tree : SceneTree, data : Dictionary):
 	if not err == OK:
 		print("Scene failed to load with error ", error_string(err))
 	
-	var board_prefab : PackedScene = load(data["level_path_array"][data["current_level_index"]])
+	var new_board_prefab : PackedScene = load(data["level_path_array"][data["current_level_index"]])
 	
 	await tree.tree_changed
 	
-	tree.current_scene.add_board(board_prefab.instantiate())
+	tree.current_scene.add_board(new_board_prefab.instantiate())
 
 static func open_new_tree(tree : SceneTree, data : Dictionary):
 	apply_saved_level_data(tree,data)
