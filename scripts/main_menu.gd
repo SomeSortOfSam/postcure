@@ -12,7 +12,8 @@ func _ready():
 	for index in saves.get_child_count():
 		var header := SaveManager.get_save_header(index)
 		saves.get_child(index).text = header["display_name"] + " " + \
-			str(SaveManager.achivement_flags_to_completion_percent(header["achivement_flags"]) * 100) + "% Completion"
+			str(SaveManager.achivement_flags_to_completion_percent(header["achivement_flags"]) * 100) \
+			+ "% Completion"
 
 func _on_new_game_pressed():
 	main_menu.hide()

@@ -10,16 +10,19 @@ const UNIT_ATLAS_COORD := [Vector2i(1,0),Vector2i(2,0)]
 
 var currently_selected_unit : Unit
 
+signal requesting_response(response : Callable)
+signal requesting_spesific_response(id : CharacterProfile, response : Callable)
+signal requesting_located_response(target : Vector2, response : Callable)
 signal requesting_player_response(response : Callable)
-signal requesting_spesific_player_response(id : int, response : Callable)
+signal requesting_spesific_player_response(id : CharacterProfile, response : Callable)
 signal requesting_located_player_response(target : Vector2, response : Callable)
 signal requesting_enemey_response(response : Callable)
-signal requesting_spesific_enemey_response(id : int, response : Callable)
+signal requesting_spesific_enemey_response(id : CharacterProfile, response : Callable)
 signal requesting_located_enemey_response(target : Vector2, response : Callable)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	populate_units()
+	populate_units.call_deferred()
 
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -29,7 +32,8 @@ func _input(event):
 
 func on_mouse_moved(event : InputEventMouseMotion):
 	clear_layer(4)
-	set_cell(4,local_to_map(event.global_position) - Vector2i(17,14),1,Vector2i(2,0))
+	if get_cell_source_id(0,local_to_map(event.global_position) - Vector2i(17,14)) != -1:
+		set_cell(4,local_to_map(event.global_position) - Vector2i(17,14),1,Vector2i(2,0))
 
 func on_left_mouse_pressed(event : InputEventMouseButton):
 	var target_cell := local_to_map(event.global_position) - Vector2i(17,14) # Magic vector? Where did this come from?
@@ -39,7 +43,7 @@ func on_left_mouse_pressed(event : InputEventMouseButton):
 		if currently_selected_unit:
 			clear_layer(2)
 			clear_layer(3)
-			highlight_moveable_cells(currently_selected_unit.starting_cell, currently_selected_unit.walking_distance)
+			call_moveable_cells(currently_selected_unit.starting_cell, currently_selected_unit.walking_distance, func(cell : Vector2i) : set_cell(2,cell, 1, Vector2i.ZERO))
 	)
 	if not currently_selected_unit or not try_move(cell_pos):
 		deselect_unit()
@@ -52,13 +56,20 @@ func deselect_unit():
 		for poly_effect in action.get_cell_effects(actions[action],self):
 			set_cell(3,poly_effect.cell,1,Vector2i.ZERO)
 
-func highlight_moveable_cells(cell : Vector2i, distance : int):
+func call_moveable_cells(cell : Vector2i, distance : int, on_cell : Callable ):
 	if distance <= 0:
 		return
 	for neighbor : Vector2i in get_surrounding_cells(cell):
-		highlight_moveable_cells(neighbor,distance - 1)
-	if get_cell_source_id(0,cell) != -1:
-		set_cell(2,cell, 1, Vector2i.ZERO)
+		call_moveable_cells(neighbor,distance - 1, on_cell)
+	var units_on_cell : Array[Unit] = []
+	requesting_located_response.emit(map_to_local(cell), func(unit : Unit) : units_on_cell.append(unit))
+	if get_cell_source_id(0,cell) != -1 and units_on_cell.size() == 0:
+		on_cell.call(cell)
+
+func get_moveable_cells(unit : Unit) -> Array[Vector2i]:
+	var output : Array[Vector2i] = []
+	call_moveable_cells(unit.starting_cell,unit.walking_distance,func(cell : Vector2i): output.append(cell))
+	return output
 
 func try_move(target : Vector2) -> bool:
 	var current_cell : Vector2i = currently_selected_unit.starting_cell
@@ -79,10 +90,16 @@ func populate_units():
 		unit.apply_profile(character_profiles[UNIT_ATLAS_COORD.find(unit_atlas_coord)])
 		unit.position = map_to_local(cell)
 		unit.starting_cell = cell
-		(requesting_located_player_response if PLAYER_ATLAS_COORD.has(unit_atlas_coord) else requesting_located_enemey_response).connect(unit.respond_to_location)
-		(requesting_player_response if PLAYER_ATLAS_COORD.has(unit_atlas_coord) else requesting_enemey_response).connect(unit.respond_to_board)
-		(requesting_spesific_player_response if PLAYER_ATLAS_COORD.has(unit_atlas_coord) else requesting_spesific_enemey_response).connect(unit.respond_to_board_spesifically)
-	set_layer_modulate(1,Color(Color.WHITE,0))
+		subscribe_to_requests(unit,PLAYER_ATLAS_COORD.has(unit_atlas_coord))
+	clear_layer(1)
+
+func subscribe_to_requests(unit : Unit, is_player : bool):
+	requesting_response.connect(unit.respond_to_board)
+	requesting_spesific_response.connect(unit.respond_to_board_spesifically)
+	requesting_located_response.connect(unit.respond_to_location)
+	(requesting_located_player_response if is_player else requesting_located_enemey_response).connect(unit.respond_to_location)
+	(requesting_player_response if is_player else requesting_enemey_response).connect(unit.respond_to_board)
+	(requesting_spesific_player_response if is_player else requesting_spesific_enemey_response).connect(unit.respond_to_board_spesifically)
 
 func process_turn(player_turn : bool):
 	process_movement(player_turn)
@@ -104,11 +121,26 @@ func process_movement(player_turn : bool):
 		move_enemies()
 
 func move_enemies():
-	pass
+	for enemey : Unit in get_enemies():
+		var best_cell : Vector2i = enemey.starting_cell
+		print("Start: ", best_cell)
+		var best_cell_distance_squared : float = INF
+		for player : Unit in get_players():
+			var player_cell := local_to_map(player.position)
+			print("Target: ", player_cell)
+			for cell : Vector2i in get_moveable_cells(enemey):
+				var new_distance_squared = (player_cell as Vector2).distance_squared_to(cell)
+				if new_distance_squared < best_cell_distance_squared:
+					best_cell = cell
+					best_cell_distance_squared = new_distance_squared
+					print("New best! ", best_cell)
+		print("Best: ", best_cell)
+		enemey.position = map_to_local(best_cell)
+		enemey.starting_cell = best_cell
 
 func get_actions(player_turn : bool) -> Dictionary: # { PolyAction : Array[Unit] }
 	var output : Dictionary = {}
-	var units : Dictionary = {} # { int : Array[Unit] }
+	var units : Dictionary = {} # { CharacterProfile : Array[Unit] }
 	(requesting_player_response if player_turn else requesting_enemey_response).emit(
 		func(unit : Unit): 
 			if not units.has(unit.id):
@@ -148,3 +180,18 @@ func get_adjacent_unit(unit : Unit, units : Dictionary, id : CharacterProfile) -
 		if valid_cells.has(local_to_map(canidate.position)):
 			return canidate
 	return null
+
+func get_enemies() -> Array[Unit]:
+	var output : Array[Unit] = []
+	requesting_enemey_response.emit(func(unit : Unit): output.append(unit))
+	return output
+
+func get_players() -> Array[Unit]:
+	var output : Array[Unit] = []
+	requesting_player_response.emit(func(unit : Unit): output.append(unit))
+	return output
+
+func get_units() -> Array[Unit]:
+	var output : Array[Unit] = []
+	requesting_response.emit(func(unit : Unit): output.append(unit))
+	return output

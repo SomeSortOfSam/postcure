@@ -12,9 +12,12 @@ const board_prefab : PackedScene = preload("res://scenes/game.tscn")
 static var save_location = 0
 
 static func get_save_header(index : int) -> Dictionary:
+	if not FileAccess.file_exists("user://savegame_%s.save" % index):
+		return {"display_name" : "New Game", "achivement_flags" : 0}
 	var data := get_save_data(index)
 	return {"display_name" : data["display_name"], "achivement_flags" : data["achivement_flags"]}
 
+@warning_ignore("unused_parameter")
 static func achivement_flags_to_completion_percent(flags : int) -> float:
 	return 0
 
@@ -39,9 +42,9 @@ static func close_current_tree(tree : SceneTree):
 
 static func switch_tree(tree : SceneTree, data : Dictionary):
 	if data["current_level_index"] < 0:
-		switch_tree_to_hub_level(tree, data)
+		await switch_tree_to_hub_level(tree, data)
 	else:
-		switch_tree_to_board(tree, data)
+		await switch_tree_to_board(tree, data)
 
 static func switch_tree_to_hub_level(tree : SceneTree, data : Dictionary):
 	var err = tree.change_scene_to_file(data["hub_level_path"])
@@ -73,6 +76,7 @@ static func open_new_tree(tree : SceneTree, data : Dictionary):
 		post_level_animatior.play("Intro")
 		await post_level_animatior.animation_finished
 
+@warning_ignore("unused_parameter")
 static func apply_saved_level_data(tree : SceneTree, data : Dictionary):
 	pass
 
@@ -96,6 +100,7 @@ static func get_save_data(index : int) -> Dictionary:
 	return json.get_data()
 
 static func save(index : int, changes : Dictionary):
-	var data = get_save_data(index)
+	var data : Dictionary = get_save_data(index)
 	var save_game = FileAccess.open("user://savegame_%s.save" % index,FileAccess.WRITE)
+	data.merge(changes,true)
 	save_game.store_line(JSON.stringify(data,"\t"))

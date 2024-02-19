@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://5fu8tc8fd60d"]
+[gd_scene load_steps=13 format=3 uid="uid://5fu8tc8fd60d"]
 
 [ext_resource type="Script" path="res://scripts/board.gd" id="1_cn16e"]
 [ext_resource type="Texture2D" uid="uid://ci2gbwrwmknuc" path="res://sprites/programer_character.svg" id="1_wskna"]
@@ -33,6 +33,11 @@ script = ExtResource("5_gxehn")
 root = ExtResource("6_xrehn")
 partners = Array[Resource("res://scripts/character_profile.gd")]([ExtResource("6_xrehn")])
 
+[sub_resource type="Resource" id="Resource_5grrw"]
+script = ExtResource("5_gxehn")
+root = ExtResource("7_a44dc")
+partners = Array[Resource("res://scripts/character_profile.gd")]([ExtResource("7_a44dc")])
+
 [node name="TileMap" type="TileMap"]
 tile_set = SubResource("TileSet_oag8x")
 format = 2
@@ -49,8 +54,9 @@ layer_3/modulate = Color(1, 0.0588235, 0.133333, 0.501961)
 layer_3/tile_data = PackedInt32Array()
 layer_4/name = "Coursor"
 layer_4/modulate = Color(1, 0.0941176, 1, 0.615686)
+layer_4/z_index = 1
 layer_4/tile_data = PackedInt32Array()
 script = ExtResource("1_cn16e")
 unit_prefab = ExtResource("2_aa7cq")
-poly_actions = Array[ExtResource("5_gxehn")]([SubResource("Resource_jyljm")])
+poly_actions = Array[ExtResource("5_gxehn")]([SubResource("Resource_jyljm"), SubResource("Resource_5grrw")])
 character_profiles = Array[Resource("res://scripts/character_profile.gd")]([ExtResource("6_xrehn"), ExtResource("7_a44dc")])
